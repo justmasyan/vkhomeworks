@@ -4,18 +4,13 @@ import mainpackage.Application;
 
 import java.util.logging.Logger;
 
-public class ConsoleMyLogger implements MyLogger {
+public class ConsoleMyLogger extends MyLogger {
 
-    final private Logger logger = Logger.getLogger(Application.class.getName());
-
-//    @Inject
-//    public ConsoleMyLogger(Logger logger) {
-//        this.logger = logger;
-//    }
+    final static private Logger logger = Logger.getLogger(Application.class.getName());
 
     @Override
-    public int write(int id_str, String str) {
-        logger.info(id_str++ + " " + str);
-        return id_str;
+    public void write(String str) {
+        logger.info(  id_str++ + " " + str);
+
     }
 }

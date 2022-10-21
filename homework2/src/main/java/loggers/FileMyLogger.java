@@ -3,18 +3,17 @@ package loggers;
 import mainpackage.Application;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-public class FileMyLogger implements MyLogger {
+public class FileMyLogger extends MyLogger {
 
     final private String filename;
     final private String tag;
 
-    //    @Inject
-    //    private Logger logger;
-    final private Logger logger = Logger.getLogger(Application.class.getName());
+    final static private Logger logger = Logger.getLogger(Application.class.getName());
 
     public FileMyLogger(String filename, String tag) {
         this.filename = filename;
@@ -22,11 +21,11 @@ public class FileMyLogger implements MyLogger {
     }
 
     @Override
-    public int write(int id_str, String str) {
+    public void write(String str) {
 
         try {
             logger.setUseParentHandlers(false);
-            FileHandler fileHandler = new FileHandler(filename, true);
+            FileHandler fileHandler = new FileHandler(Paths.get(filename).toAbsolutePath().toString(), true);
             logger.addHandler(fileHandler);
             fileHandler.setFormatter(new SimpleFormatter());
             logger.info("<" + tag + ">" + id_str++ + " " + str + "</" + tag + ">");
@@ -34,6 +33,6 @@ public class FileMyLogger implements MyLogger {
         } catch (IOException exc) {
             exc.printStackTrace();
         }
-        return id_str;
+
     }
 }

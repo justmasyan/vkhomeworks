@@ -7,13 +7,11 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-public class MixedMyLogger implements MyLogger {
-//    @Inject
-//    private Logger logger;
+public class MixedMyLogger extends MyLogger {
 
     final private String filename;
     final private String tag;
-    final private Logger logger = Logger.getLogger(Application.class.getName());
+    final private static  Logger logger = Logger.getLogger(Application.class.getName());
 
     public MixedMyLogger(String filename, String tag) {
         this.filename = filename;
@@ -21,7 +19,7 @@ public class MixedMyLogger implements MyLogger {
     }
 
     @Override
-    public int write(int id_str, String str) {
+    public void write(String str) {
         logger.info(id_str++ + " " + str);
 
         try {
@@ -35,6 +33,6 @@ public class MixedMyLogger implements MyLogger {
             exc.printStackTrace();
         }
         logger.setUseParentHandlers(true);
-        return id_str;
+
     }
 }

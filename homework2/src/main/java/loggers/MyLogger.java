@@ -1,6 +1,7 @@
 package loggers;
 
-public interface MyLogger {
+public abstract class MyLogger {
+    protected int id_str = 0;
 
-    int write(int id_str, String str);
+    public abstract void write(String str);
 }
