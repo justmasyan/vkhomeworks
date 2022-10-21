@@ -3,6 +3,7 @@ package loggers;
 import mainpackage.Application;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -24,7 +25,7 @@ public class MixedMyLogger extends MyLogger {
 
         try {
             logger.setUseParentHandlers(false);
-            FileHandler fileHandler = new FileHandler(filename,true);
+            FileHandler fileHandler = new FileHandler(Paths.get(filename).toAbsolutePath().toString(), true);
             logger.addHandler(fileHandler);
             fileHandler.setFormatter(new SimpleFormatter());
             logger.info("<" + tag + ">" + id_str++ + " " + str + "</" +  tag + ">");
