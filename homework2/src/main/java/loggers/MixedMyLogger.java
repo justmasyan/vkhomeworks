@@ -21,14 +21,14 @@ public class MixedMyLogger extends MyLogger {
 
     @Override
     public void write(String str) {
-        logger.info(id_str++ + " " + str);
+        logger.info(idLoggerStr++ + " " + str);
 
         try {
             logger.setUseParentHandlers(false);
             FileHandler fileHandler = new FileHandler(Paths.get(filename).toAbsolutePath().toString(), true);
             logger.addHandler(fileHandler);
             fileHandler.setFormatter(new SimpleFormatter());
-            logger.info("<" + tag + ">" + id_str++ + " " + str + "</" +  tag + ">");
+            logger.info("<" + tag + ">" + idLoggerStr++ + " " + str + "</" +  tag + ">");
             fileHandler.close();
         } catch (IOException exc){
             exc.printStackTrace();

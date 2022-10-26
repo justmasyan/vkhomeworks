@@ -21,16 +21,16 @@ public class Configuration extends AbstractModule {
             return;
         }
 
-        if (args[0].equals("-c")) {
+        if ("-c".equals(args[0])) {
 
             bind(MyLogger.class).to(ConsoleMyLogger.class);
 
         } else {
             String tag = (args.length < 2) ? "a" : args[1];
 
-            if (args[0].equals("-f")) {
+            if ("-f".equals(args[0])) {
                 bind(MyLogger.class).toInstance(new FileMyLogger(filename, tag));
-            } else if (args[0].equals("-m")) {
+            } else if ("-m".equals(args[0])) {
                 bind(MyLogger.class).toInstance(new MixedMyLogger(filename, tag));
             } else {
                 bind(MyLogger.class).to(ConsoleMyLogger.class);

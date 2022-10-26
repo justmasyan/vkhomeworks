@@ -10,7 +10,7 @@ public class ConsoleMyLogger extends MyLogger {
 
     @Override
     public void write(String str) {
-        logger.info(  id_str++ + " " + str);
+        logger.info(  idLoggerStr++ + " " + str);
 
     }
 }

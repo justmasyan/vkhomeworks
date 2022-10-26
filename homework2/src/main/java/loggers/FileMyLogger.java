@@ -28,7 +28,7 @@ public class FileMyLogger extends MyLogger {
             FileHandler fileHandler = new FileHandler(Paths.get(filename).toAbsolutePath().toString(), true);
             logger.addHandler(fileHandler);
             fileHandler.setFormatter(new SimpleFormatter());
-            logger.info("<" + tag + ">" + id_str++ + " " + str + "</" + tag + ">");
+            logger.info("<" + tag + ">" + idLoggerStr++ + " " + str + "</" + tag + ">");
             fileHandler.close();
         } catch (IOException exc) {
             exc.printStackTrace();
