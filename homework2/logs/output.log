@@ -1,0 +1,8 @@
+2022-10-21 22:17:07 INFO loggers.MixedMyLogger write <kek>1 123</kek>
+2022-10-21 22:17:09 INFO loggers.MixedMyLogger write <kek>3 123</kek>
+2022-10-21 22:17:10 INFO loggers.MixedMyLogger write <kek>5 123</kek>
+2022-10-21 22:17:32 INFO loggers.FileMyLogger write <a>0 321</a>
+2022-10-21 22:17:33 INFO loggers.FileMyLogger write <a>1 321</a>
+2022-10-21 22:17:34 INFO loggers.FileMyLogger write <a>2 321</a>
+2022-10-21 22:24:27 INFO loggers.MixedMyLogger write <ooo>1 123</ooo>
+2022-10-21 22:24:30 INFO loggers.MixedMyLogger write <ooo>3 456</ooo>
