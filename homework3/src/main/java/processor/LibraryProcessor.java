@@ -12,8 +12,8 @@ public class LibraryProcessor {
         this.libraryFactory = libraryFactory;
     }
 
-    public LibraryController getLibraryController(String capacity, boolean limitation) {
-        return libraryFactory.make(capacity, limitation);
+    public LibraryController getLibraryController(int capacity) {
+        return libraryFactory.make(capacity);
     }
 
 }

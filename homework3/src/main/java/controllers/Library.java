@@ -23,7 +23,4 @@ public class Library {
         return books.length;
     }
 
-    protected Book[] getBooks() {
-        return books;
-    }
 }

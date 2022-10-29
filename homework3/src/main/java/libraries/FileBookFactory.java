@@ -1,5 +1,6 @@
 package libraries;
 
+import LibraryExceptions.LibraryException;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import controllers.Library;
@@ -24,20 +25,13 @@ public class FileBookFactory implements BooksFactory {
     }
 
     @Override
-    public Library books() {
-        try {
-            Collection<Book> books = new Gson().fromJson(new BufferedReader(new FileReader(fileName)), listBooksType);
-            return new Library(books.toArray(new Book[books.size()]));
-        } catch (FileNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    @Override
     public Library library(int capacity) {
         try {
             Collection<Book> collection = new Gson().fromJson(new BufferedReader(new FileReader(fileName)), listBooksType);
-            Book[] books = collection.stream().limit(capacity).toArray(Book[]::new);
+            if (collection.size() > capacity)
+                throw new LibraryException();
+
+            Book[] books = collection.toArray(Book[]::new);
             return (capacity != books.length) ? new Library(Arrays.copyOf(books, capacity)) : new Library(books);
         } catch (FileNotFoundException e) {
             throw new IllegalStateException(e);

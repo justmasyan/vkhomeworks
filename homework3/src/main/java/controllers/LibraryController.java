@@ -10,17 +10,9 @@ public class LibraryController {
     private final Library library;
 
     public LibraryController(int capacity, BooksFactory booksFactory) {
-        library = booksFactory.books();
-
-        if (library.getCapacity() > capacity)
-            throw new LibraryException();
-
-
+        library = booksFactory.library(capacity);
     }
 
-    public LibraryController(String capacity, BooksFactory booksFactory) {
-        library = booksFactory.library(Integer.parseInt(capacity));
-    }
 
     public final static class Factory {
         private final BooksFactory booksFactory;
@@ -30,9 +22,9 @@ public class LibraryController {
             this.booksFactory = booksFactory;
         }
 
-        public LibraryController make(String capacity, boolean limitation) {
+        public LibraryController make(int capacity) {
 
-            return (limitation) ? new LibraryController(Integer.parseInt(capacity), booksFactory) : new LibraryController(capacity, booksFactory);
+            return new LibraryController(capacity, booksFactory);
         }
 
     }
@@ -51,31 +43,37 @@ public class LibraryController {
 
     public void addBook(Book book) {
         int count = 0;
-        try {
-            while (library.get(count) != null) {
-                count++;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
+        int limit = library.getCapacity();
+        while (count < limit && library.get(count) != null)
+            count++;
+
+        if (count != limit)
+            library.set(count, book);
+        else
             throw new LibraryException();
-        }
-        library.set(count, book);
     }
 
     public void showBooks() {
         Gson gson = new Gson();
         int length = library.getCapacity();
-
+        int count = 0;
         for (int i = 0; i < length; i++) {
             Book book = library.get(i);
 
-            if (book != null)
+            if (book != null) {
                 System.out.println("Id Position - " + i + "\n" + gson.toJson(library.get(i)));
+                count++;
+            }
         }
-        System.out.println("Library capacity - " + length + "\n");
+        System.out.println("Library capacity - " + length + "; Number of occupied places - " + count + ";\n");
     }
 
     public Book[] getBooks() {
-        return library.getBooks();
+        Book[] newLibrary = new Book[library.getCapacity()];
+        for (int i = 0; i < library.getCapacity(); i++) {
+            newLibrary[i] = library.get(i);
+        }
+        return newLibrary;
     }
 
 }
