@@ -30,13 +30,11 @@ public class LibraryController {
             this.booksFactory = booksFactory;
         }
 
-        public LibraryController make(int capacity) {
-            return new LibraryController(capacity, booksFactory);
+        public LibraryController make(String capacity, boolean limitation) {
+
+            return (limitation) ? new LibraryController(Integer.parseInt(capacity), booksFactory) : new LibraryController(capacity, booksFactory);
         }
 
-        public LibraryController makeCapacity(String capacityStr) {
-            return new LibraryController(capacityStr, booksFactory);
-        }
     }
 
     public Book getById(int id) {
@@ -47,13 +45,18 @@ public class LibraryController {
 
         Gson gson = new Gson();
         System.out.println("Id Position - " + id + "\n" + gson.toJson(book));
+        library.set(id, null);
         return book;
     }
 
     public void addBook(Book book) {
         int count = 0;
-        while (library.get(count) != null) {
-            count++;
+        try {
+            while (library.get(count) != null) {
+                count++;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new LibraryException();
         }
         library.set(count, book);
     }
@@ -61,10 +64,19 @@ public class LibraryController {
     public void showBooks() {
         Gson gson = new Gson();
         int length = library.getCapacity();
-        for (int i = 0; i < length; i++) {
-            System.out.println("Id Position - " + i + "\n" + gson.toJson(library.get(i)));
-        }
 
+        for (int i = 0; i < length; i++) {
+            Book book = library.get(i);
+
+            if (book != null)
+                System.out.println("Id Position - " + i + "\n" + gson.toJson(library.get(i)));
+        }
+        System.out.println("Library capacity - " + length + "\n");
     }
+
+    public Book[] getBooks() {
+        return library.getBooks();
+    }
+
 }
 

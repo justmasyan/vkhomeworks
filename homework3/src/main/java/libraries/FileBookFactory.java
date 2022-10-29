@@ -13,9 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class FileBookFactory implements BooksFactory{
+public class FileBookFactory implements BooksFactory {
 
-    private static final Type listBooksType = new TypeToken<ArrayList<Book>>(){}.getType();
+    private static final Type listBooksType = new TypeToken<ArrayList<Book>>() {
+    }.getType();
     private final String fileName;
 
     public FileBookFactory(String fileName) {
@@ -31,12 +32,13 @@ public class FileBookFactory implements BooksFactory{
             throw new IllegalStateException(e);
         }
     }
+
     @Override
     public Library library(int capacity) {
         try {
             Collection<Book> collection = new Gson().fromJson(new BufferedReader(new FileReader(fileName)), listBooksType);
             Book[] books = collection.stream().limit(capacity).toArray(Book[]::new);
-            return (capacity != books.length)? new Library(Arrays.copyOf(books,capacity)) : new Library(books);
+            return (capacity != books.length) ? new Library(Arrays.copyOf(books, capacity)) : new Library(books);
         } catch (FileNotFoundException e) {
             throw new IllegalStateException(e);
         }

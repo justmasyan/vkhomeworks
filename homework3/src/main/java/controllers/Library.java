@@ -11,15 +11,19 @@ public class Library {
         this.books = books;
     }
 
-    protected Book get(int id){
+    protected Book get(int id) {
         return books[id];
     }
 
-    protected void set(int id,Book book){
+    protected void set(int id, Book book) {
         books[id] = book;
     }
 
-    protected int getCapacity(){
+    protected int getCapacity() {
         return books.length;
+    }
+
+    protected Book[] getBooks() {
+        return books;
     }
 }
