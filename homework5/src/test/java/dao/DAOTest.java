@@ -1,26 +1,28 @@
-package repositories;
+package dao;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.sql.Date;
 
-class ReportsProductRepositoryTest {
+import static dao.DataBaseInitializer.DEFAULT;
+
+class DAOTest {
 
     //Необходимо создать тестовую базу данных
     final private DataBaseInitializer testDatabase = new DataBaseInitializer(
-            "localhost",
-            "5432",
-            "ReportProductsTest",
-            "postgres",
-            "postgres"
+            DEFAULT.getCONNECTION(),
+            DEFAULT.getDB_NAME() + "Test",
+            DEFAULT.getUSERNAME(),
+            DEFAULT.getPASSWORD()
     );
-    @BeforeAll
-    public static void initDatabase() {
-        DataBaseInitializer.initTestDatabase();
+
+    @BeforeEach
+    public void initDatabase() {
+        testDatabase.initTestDatabase();
     }
 
     @Test
@@ -35,25 +37,34 @@ class ReportsProductRepositoryTest {
         exceptedMap.put("potatowild", Arrays.asList(array));
         array = new String[]{null};
         exceptedMap.put("pineappleblack", Arrays.asList(array));
-        array = new String[]{"FunnyArbuser", "LogisGusi", "VotchinaLogus"};
+        array = new String[]{"Antonvis", "ManorSirma", "Lamita", "Anton", "YourSirma", "Mivis", "Mivista", "HailOculus", "FunnyArbuser", "LogisGusi"};
         exceptedMap.put("tomatored", Arrays.asList(array));
-        Assertions.assertEquals(exceptedMap, ReportsProductRepository.maxTenProviders(testDatabase));
+        Assertions.assertEquals(exceptedMap, DAO.maxTenProviders(testDatabase));
     }
 
     @Test
     void priceBetterThan() {
         int exceptedAmount = 50;
-
         Map<String, List<String>> exceptedMap = new HashMap<>();
 
         String[] array = new String[]{"tomatored"};
+        exceptedMap.put("Antonvis", Arrays.asList(array));
+        exceptedMap.put("Anton", Arrays.asList(array));
+        exceptedMap.put("Lamita", Arrays.asList(array));
         exceptedMap.put("FunnyArbuser", Arrays.asList(array));
+        exceptedMap.put("ManorSirma", Arrays.asList(array));
+        exceptedMap.put("Mivis", Arrays.asList(array));
+        exceptedMap.put("YourSirma", Arrays.asList(array));
+        exceptedMap.put("Mivista", Arrays.asList(array));
+        exceptedMap.put("HailOculus", Arrays.asList(array));
+
         array = new String[]{"orangesoranges"};
         exceptedMap.put("VotchinaLogus", Arrays.asList(array));
+
         array = new String[]{"bananayellow", "potatowild"};
         exceptedMap.put("VitaKamin", Arrays.asList(array));
 
-        Assertions.assertEquals(exceptedMap, ReportsProductRepository.priceBetterThan(testDatabase,exceptedAmount));
+        Assertions.assertEquals(exceptedMap, DAO.priceBetterThan(testDatabase, exceptedAmount));
 
     }
 
@@ -74,10 +85,10 @@ class ReportsProductRepositoryTest {
         exceptedMap.put("potatowild", Arrays.asList(array));
         array = new Integer[]{0, 0};
         exceptedMap.put("pineappleblack", Arrays.asList(array));
-        array = new Integer[]{89, 21217};
+        array = new Integer[]{2289, 401217};
         exceptedMap.put("tomatored", Arrays.asList(array));
 
-        Assertions.assertEquals(exceptedMap, ReportsProductRepository.allProductsAmountAndSum(testDatabase,exceptedFinishPeriod, exceptedStartPeriod));
+        Assertions.assertEquals(exceptedMap, DAO.allProductsAmountAndSum(testDatabase, exceptedFinishPeriod, exceptedStartPeriod));
     }
 
     @Test
@@ -97,10 +108,10 @@ class ReportsProductRepositoryTest {
         exceptedMap.put("potatowild", price);
         price = null;
         exceptedMap.put("pineappleblack", price);
-        price = new BigDecimal("416.5000000000000000");
+        price = new BigDecimal("311.0000000000000000");
         exceptedMap.put("tomatored", price);
 
-        Assertions.assertEquals(exceptedMap, ReportsProductRepository.averagePriceProduct(testDatabase,exceptedFinishPeriod, exceptedStartPeriod));
+        Assertions.assertEquals(exceptedMap, DAO.averagePriceProduct(testDatabase, exceptedFinishPeriod, exceptedStartPeriod));
     }
 
     @Test
@@ -109,17 +120,28 @@ class ReportsProductRepositoryTest {
         Date exceptedFinishPeriod = Date.valueOf("1916-01-01");
 
         Map<String, List<String>> exceptedMap = new HashMap<>();
-        String[] array = new String[]{"tomatored", "potatowild"};
+        String[] array = new String[]{"nullnull"};
+        exceptedMap.put("Antonvis", Arrays.asList(array));
+        exceptedMap.put("Anton", Arrays.asList(array));
+        exceptedMap.put("Mivis", Arrays.asList(array));
+        exceptedMap.put("YourSirma", Arrays.asList(array));
+        exceptedMap.put("HailOculus", Arrays.asList(array));
+        exceptedMap.put("Lami", Arrays.asList(array));
+        exceptedMap.put("ManorSirma", Arrays.asList(array));
+
+        array = new String[]{"tomatored"};
+        exceptedMap.put("Lamita", Arrays.asList(array));
+        exceptedMap.put("Mivista", Arrays.asList(array));
+
+        array = new String[]{"tomatored", "potatowild"};
         exceptedMap.put("FunnyArbuser", Arrays.asList(array));
-        array = new String[]{"orangesoranges", "applesgreen", "tomatored", "potatowild"};
+        array = new String[]{"potatowild", "tomatored", "applesgreen", "orangesoranges"};
         exceptedMap.put("VotchinaLogus", Arrays.asList(array));
-        array = new String[]{"nullnull"};
-        exceptedMap.put("Kolpak", Arrays.asList(array));
-        array = new String[]{"bananayellow", "tomatored"};
+        array = new String[]{"tomatored", "bananayellow"};
         exceptedMap.put("LogisGusi", Arrays.asList(array));
         array = new String[]{"nullnull"};
         exceptedMap.put("VitaKamin", Arrays.asList(array));
 
-        Assertions.assertEquals(exceptedMap, ReportsProductRepository.productsFromAllOrganization(testDatabase,exceptedStartPeriod, exceptedFinishPeriod));
+        Assertions.assertEquals(exceptedMap, DAO.productsFromAllOrganization(testDatabase, exceptedStartPeriod, exceptedFinishPeriod));
     }
 }

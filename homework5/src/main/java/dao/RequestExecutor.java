@@ -1,15 +1,14 @@
-package repositories;
+package dao;
 
 import funcinterfaces.PreparedStatementAdderator;
 import funcinterfaces.ResultSetMapper;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
 
-public class DAO {
+public class RequestExecutor {
 
-    protected static void update(DataBaseInitializer database,String sql, PreparedStatementAdderator adderator){
+    protected static void update(DataBaseInitializer database, String sql, PreparedStatementAdderator adderator) {
         try (var connection = DriverManager.getConnection(database.getCONNECTION() + database.getDB_NAME(), database.getUSERNAME(), database.getPASSWORD())) {
             try (var statement = connection.prepareStatement(sql)) {
                 adderator.addValues(statement);
@@ -20,7 +19,7 @@ public class DAO {
         }
     }
 
-    protected static Map query(DataBaseInitializer database,String sql, PreparedStatementAdderator adderator, ResultSetMapper mapper){
+    protected static Object query(DataBaseInitializer database, String sql, PreparedStatementAdderator adderator, ResultSetMapper mapper) {
         try (var connection = DriverManager.getConnection(database.getCONNECTION() + database.getDB_NAME(), database.getUSERNAME(), database.getPASSWORD())) {
             try (var statement = connection.prepareStatement(sql)) {
                 adderator.addValues(statement);
@@ -32,7 +31,7 @@ public class DAO {
         }
     }
 
-    protected static Map query(DataBaseInitializer database,String sql,ResultSetMapper mapper){
+    protected static Object query(DataBaseInitializer database, String sql, ResultSetMapper mapper) {
         try (var connection = DriverManager.getConnection(database.getCONNECTION() + database.getDB_NAME(), database.getUSERNAME(), database.getPASSWORD())) {
             try (var statement = connection.createStatement()) {
                 return mapper.get(statement.executeQuery(sql));

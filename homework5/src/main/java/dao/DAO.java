@@ -1,4 +1,4 @@
-package repositories;
+package dao;
 
 import funcinterfaces.PreparedStatementAdderator;
 import funcinterfaces.ResultSetMapper;
@@ -10,23 +10,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ReportsProductRepository {
+public interface DAO<T> {
 
-    public static Map<String, List<String>> maxTenProviders(DataBaseInitializer database) {
+    T get(DataBaseInitializer database, int id);
 
-        String sql = "SELECT title,variety,provider FROM products\n" +
+    List<T> all(DataBaseInitializer database);
+
+    void insert(DataBaseInitializer database, T entity);
+
+    void update(DataBaseInitializer database, int id, T entity);
+
+    void delete(DataBaseInitializer database, T entity);
+
+    static Map<String, List<String>> maxTenProviders(DataBaseInitializer database) {
+
+        String sql = "SELECT title,variety,title_provider FROM products\n" +
                 "LEFT JOIN (\n" +
-                "    SELECT product,provider,RANK() OVER(PARTITION BY product ORDER BY SUM(AMOUNT) DESC) AS r\n" +
+                "    SELECT product,providers.title as title_provider,RANK() OVER(PARTITION BY product ORDER BY SUM(AMOUNT) DESC) AS r\n" +
                 "    FROM invoice_data\n" +
                 "    INNER JOIN invoice_info ON invoice_id = invoice_info.id\n" +
-                "    GROUP BY product,provider\n" +
+                "    INNER JOIN providers ON providers.id = provider\n" +
+                "    GROUP BY product,providers.title\n" +
                 "    ORDER BY product, r\n" +
                 "    ) as sorted\n" +
                 "ON products.id = product\n" +
                 "WHERE r <= 10 OR r is null\n" +
                 "ORDER by title,variety,r";
 
-        ResultSetMapper<String, List<String>> mapper = (set) -> {
+        ResultSetMapper<Map<String, List<String>>> mapper = (set) -> {
             Map<String, List<String>> map = new HashMap<>();
             List<String> providers = new ArrayList<>();
             String key = "";
@@ -40,36 +51,37 @@ public class ReportsProductRepository {
                     key = anotherKey;
                     providers = new ArrayList<>();
                 }
-                providers.add(set.getString("provider"));
+                providers.add(set.getString("title_provider"));
             }
             if (providers.size() != 0)
                 map.put(key, providers);
             return map;
         };
 
-        return DAO.query(database,sql, mapper);
+        return (Map<String, List<String>>) RequestExecutor.query(database, sql, mapper);
     }
 
-    public static Map<String, List<String>> priceBetterThan(DataBaseInitializer database, int amount) {
-        String sql = "SELECT provider,title,variety FROM products\n" +
+    static Map<String, List<String>> priceBetterThan(DataBaseInitializer database, int amount) {
+        String sql = "SELECT title_provider,title,variety FROM products\n" +
                 "LEFT JOIN (\n" +
-                "    SELECT product,provider,SUM(amount) as amount\n" +
+                "    SELECT product,providers.title as title_provider,SUM(amount) as amount\n" +
                 "    FROM invoice_data\n" +
                 "    INNER JOIN invoice_info ON invoice_id = invoice_info.id\n" +
-                "    GROUP BY product,provider\n" +
+                "    INNER JOIN providers ON providers.id = provider\n" +
+                "    GROUP BY product,providers.title\n" +
                 "    ORDER BY product, amount DESC\n" +
                 "    ) as sorted\n" +
                 "ON products.id = product\n" +
                 "WHERE amount > ?\n" +
-                "ORDER BY provider DESC";
+                "ORDER BY title_provider DESC";
 
         PreparedStatementAdderator adderator = (ps) -> ps.setInt(1, amount);
-        ResultSetMapper<String, List<String>> mapper = (set) -> {
+        ResultSetMapper<Map<String, List<String>>> mapper = (set) -> {
             Map<String, List<String>> map = new HashMap<>();
             List<String> products = new ArrayList<>();
             String key = "";
             while (set.next()) {
-                String anotherKey = set.getString("provider");
+                String anotherKey = set.getString("title_provider");
 
                 if (!key.equals(anotherKey)) {
                     if (!key.equals(""))
@@ -85,10 +97,10 @@ public class ReportsProductRepository {
             return map;
         };
 
-        return DAO.query(database,sql, adderator, mapper);
+        return (Map<String, List<String>>) RequestExecutor.query(database, sql, adderator, mapper);
     }
 
-    public static Map<String, List<Integer>> allProductsAmountAndSum(DataBaseInitializer database, Date finishPeriod, Date startPeriod) {
+    static Map<String, List<Integer>> allProductsAmountAndSum(DataBaseInitializer database, Date finishPeriod, Date startPeriod) {
         String sql = "SELECT title,variety,total_amount,total_sum FROM products\n" +
                 "LEFT JOIN (\n" +
                 "    SELECT product,SUM(amount) as total_amount, SUM(price * amount) as total_sum  FROM invoice_data\n" +
@@ -104,7 +116,7 @@ public class ReportsProductRepository {
             ps.setDate(2, finishPeriod);
         };
 
-        ResultSetMapper<String, List<Integer>> mapper = (set) -> {
+        ResultSetMapper<Map<String, List<Integer>>> mapper = (set) -> {
             Map<String, List<Integer>> map = new HashMap<>();
             List<Integer> totalAmountAndSum;
 
@@ -119,10 +131,10 @@ public class ReportsProductRepository {
             return map;
         };
 
-        return DAO.query(database,sql, adderator, mapper);
+        return (Map<String, List<Integer>>) RequestExecutor.query(database, sql, adderator, mapper);
     }
 
-    public static Map<String, BigDecimal> averagePriceProduct(DataBaseInitializer database, Date finishPeriod, Date startPeriod) {
+    static Map<String, BigDecimal> averagePriceProduct(DataBaseInitializer database, Date finishPeriod, Date startPeriod) {
         String sql = "SELECT title,variety,avg_price FROM products\n" +
                 "LEFT JOIN(\n" +
                 "    SELECT product,AVG(price) as avg_price\n" +
@@ -139,7 +151,7 @@ public class ReportsProductRepository {
             ps.setDate(2, finishPeriod);
         };
 
-        ResultSetMapper<String, BigDecimal> mapper = (set) -> {
+        ResultSetMapper<Map<String, BigDecimal>> mapper = (set) -> {
             Map<String, BigDecimal> map = new HashMap<>();
 
             while (set.next()) {
@@ -151,10 +163,10 @@ public class ReportsProductRepository {
             return map;
         };
 
-        return DAO.query(database,sql, adderator, mapper);
+        return (Map<String, BigDecimal>) RequestExecutor.query(database, sql, adderator, mapper);
     }
 
-    public static Map<String,List<String>> productsFromAllOrganization(DataBaseInitializer database,Date startPeriod, Date finishPeriod) {
+    static Map<String, List<String>> productsFromAllOrganization(DataBaseInitializer database, Date startPeriod, Date finishPeriod) {
         String sql = "SELECT providers.title as provider_name, sorted.title AS title, variety FROM providers\n" +
                 "LEFT JOIN (\n" +
                 "        SELECT provider,products.title,variety FROM invoice_info\n" +
@@ -163,7 +175,7 @@ public class ReportsProductRepository {
                 "        WHERE date >= ? AND date <= ?\n" +
                 "        GROUP BY provider,products,title,variety\n" +
                 "    ) AS sorted\n" +
-                "ON providers.title = provider\n" +
+                "ON providers.id = provider\n" +
                 "ORDER BY provider_name DESC";
 
         PreparedStatementAdderator adderator = (ps) -> {
@@ -171,7 +183,7 @@ public class ReportsProductRepository {
             ps.setDate(2, finishPeriod);
         };
 
-        ResultSetMapper<String, List<String>> mapper = (set) -> {
+        ResultSetMapper<Map<String, List<String>>> mapper = (set) -> {
             Map<String, List<String>> map = new HashMap<>();
             List<String> products = new ArrayList<>();
             String key = "";
@@ -192,7 +204,7 @@ public class ReportsProductRepository {
             return map;
         };
 
-        return DAO.query(database,sql,adderator,mapper);
+        return (Map<String, List<String>>) RequestExecutor.query(database, sql, adderator, mapper);
     }
 
 }
